@@ -47,18 +47,29 @@ public class ProductController {
 
     ) {
         try {
-            MultipartFile file = productDTO.getFile();
+            List<MultipartFile> files = productDTO.getFiles();
+            files = files == null ? new ArrayList<MultipartFile>() : files;
+            for(MultipartFile file : files) {
+                if (file != null && !file.isEmpty()) {
 
-            if (file != null && !file.isEmpty()) {
-                if (file.getSize() > 10 * 1024 * 1024) {
-                    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body("File is too big");
-                }
-                String ContenType = file.getContentType();
-                if (ContenType == null || ContenType.startsWith("image/")) {
+                    if (file.getSize() > 10 * 1024 * 1024) {
+                        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body("File is too big");
+                    }
+                    String ContenType = file.getContentType();
+                    if (ContenType == null || ContenType.startsWith("image/")) {
 //                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is not image");
+                    }
+
                 }
+                if (file.getSize() == 0){
+                    continue;
+                }
+                // luu file va cap nhat thumbai dto
+                String fileName = storeFile(file);
+                // luu xuong DB
 
             }
+
 
             if (result.hasErrors()) {
                 List<String> errorMessages = result.getFieldErrors()
@@ -68,10 +79,6 @@ public class ProductController {
                 return ResponseEntity.badRequest().body(errorMessages);
 
             }
-
-            // luu file va cap nhat thumbai dto
-            String fileName = storeFile(file);
-            // luu xuong DB
 
             return ResponseEntity.ok("tao thanh cong");
         } catch (Exception e) {
