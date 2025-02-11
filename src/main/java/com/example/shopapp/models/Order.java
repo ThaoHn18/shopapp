@@ -1,21 +1,21 @@
 package com.example.shopapp.models;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
 @Table(name = "orders")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Order {
+public class Order{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -55,7 +55,7 @@ public class Order {
     String shippingAddress;
 
     @Column(name = "shipping_date")
-    Data shippingDate;
+    LocalDate shippingDate;
 
     @Column(name = "tracking_number")
     String trackingNumber;
@@ -67,9 +67,9 @@ public class Order {
     String paymentStatus;
 
     @Column(name = "payment_date")
-    Date paymentDate;
+    LocalDate paymentDate;
 
     @Column(name = "active")
-    boolean active;
+    Boolean active;
 }
 

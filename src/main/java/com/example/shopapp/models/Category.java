@@ -1,19 +1,19 @@
 package com.example.shopapp.models;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.io.Serializable;
 
 @Entity
 @Table(name = "categories")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Category {
+public class Category{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;

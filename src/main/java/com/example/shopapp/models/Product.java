@@ -1,10 +1,7 @@
 package com.example.shopapp.models;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
@@ -13,6 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "products")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -31,6 +29,6 @@ public class Product extends BaseModel {
 
 
     @ManyToOne
-    @Column(name = "category_id")
-    Long categoryId;
+    @JoinColumn(name = "category_id")
+    Category category;
 }

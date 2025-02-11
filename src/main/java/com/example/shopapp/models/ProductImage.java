@@ -1,14 +1,13 @@
 package com.example.shopapp.models;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
+
 @Entity
+@Data
+@Builder
 @Table(name = "product_images")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,8 +17,8 @@ public class ProductImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @ManyToOne
-    @Column(name = "product_id")
-    Long productId;
+    @JoinColumn(name = "product_id")
+    Product product;
 
     @Column(name = "image_url", nullable = false)
     String imageUrl;

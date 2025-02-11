@@ -1,16 +1,14 @@
 package com.example.shopapp.models;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.checkerframework.checker.units.qual.A;
 
 @Entity
 @Table(name = "roles")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)

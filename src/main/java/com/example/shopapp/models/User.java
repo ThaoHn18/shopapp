@@ -1,10 +1,7 @@
 package com.example.shopapp.models;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
@@ -12,6 +9,7 @@ import java.util.Date;
 @Entity
 @Table(name = "users")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -38,11 +36,11 @@ public class User extends BaseModel {
     @Column(name = "facebook_account_id")
     int facobookAccountId;
 
-    @Column(name = "google-account_id")
+    @Column(name = "google_account_id")
     int googleAccountId;
 
     @ManyToOne
-    @Column(name = "role_id", nullable = false)
+    @JoinColumn(name = "role_id", nullable = false)
     Role role;
 
 

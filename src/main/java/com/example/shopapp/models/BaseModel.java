@@ -4,20 +4,22 @@ import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.checkerframework.checker.units.qual.A;
 
 import java.time.LocalDateTime;
 
-@Data
+
+@Data//toString
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
 public class BaseModel {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
@@ -26,6 +28,7 @@ public class BaseModel {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
+
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();

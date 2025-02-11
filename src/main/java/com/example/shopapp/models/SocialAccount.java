@@ -1,10 +1,7 @@
 package com.example.shopapp.models;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
@@ -31,7 +28,7 @@ public class SocialAccount {
     String name;
 
     @ManyToOne
-    @Column(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     User user;
 
 }
