@@ -1,8 +1,12 @@
 package com.example.shopapp.controller;
 
 import com.example.shopapp.dtos.ProductDTO;
-import com.vaadin.pro.licensechecker.Product;
+import com.example.shopapp.dtos.ProductImageDTO;
+import com.example.shopapp.models.Product;
+import com.example.shopapp.models.ProductImage;
+import com.example.shopapp.services.ProductService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.jsoup.internal.StringUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,7 +31,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping("${api.prefix}/products")
 //@Validated
+@RequiredArgsConstructor
 public class ProductController {
+    private final ProductService productService;
     @GetMapping("")
     public ResponseEntity<String> getAllProducts(
             @RequestParam(value = "page") int page,
@@ -47,9 +53,10 @@ public class ProductController {
 
     ) {
         try {
+            Product newProduct = productService.createProduct(productDTO);
             List<MultipartFile> files = productDTO.getFiles();
             files = files == null ? new ArrayList<MultipartFile>() : files;
-            for(MultipartFile file : files) {
+            for (MultipartFile file : files) {
                 if (file != null && !file.isEmpty()) {
 
                     if (file.getSize() > 10 * 1024 * 1024) {
@@ -61,13 +68,18 @@ public class ProductController {
                     }
 
                 }
-                if (file.getSize() == 0){
+                if (file.getSize() == 0) {
                     continue;
                 }
                 // luu file va cap nhat thumbai dto
                 String fileName = storeFile(file);
                 // luu xuong DB
-
+                ProductImage productImage = productService.createProductImage(newProduct.getId(),
+                        ProductImageDTO.builder()
+                                .productId(newProduct.getId())
+                                .imageUrl(fileName)
+                                .build()
+                );
             }
 
 
