@@ -47,15 +47,35 @@ public class ProductController {
         return ResponseEntity.ok("procductId: "+ productId);
     }
 
-    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> addProduct(@Valid @ModelAttribute ProductDTO productDTO,
-                                        BindingResult result
+    @PostMapping("")
+    public ResponseEntity<?> createProduct(@RequestBody @Valid ProductDTO productDTO, BindingResult result) {
+        if (result.hasErrors()) {
+            List<String> errorMessages = result.getFieldErrors()
+                    .stream()
+                    .map(FieldError::getDefaultMessage)
+                    .toList();
+            return ResponseEntity.badRequest().body(errorMessages);
+        }
+        try{
 
+            Product newProduct = productService.createProduct(productDTO);
+            return ResponseEntity.ok(newProduct);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+
+    }
+
+    @PostMapping(value = "uploads/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadImages(@PathVariable("id") Long id,
+                                        @ModelAttribute("files") List<MultipartFile> files,
+                                        BindingResult result
     ) {
         try {
-            Product newProduct = productService.createProduct(productDTO);
-            List<MultipartFile> files = productDTO.getFiles();
+            Product existingProduct = productService.getProductById(id);
             files = files == null ? new ArrayList<MultipartFile>() : files;
+            List<ProductImage> productImages = new ArrayList<>();
             for (MultipartFile file : files) {
                 if (file != null && !file.isEmpty()) {
 
@@ -74,9 +94,9 @@ public class ProductController {
                 // luu file va cap nhat thumbai dto
                 String fileName = storeFile(file);
                 // luu xuong DB
-                ProductImage productImage = productService.createProductImage(newProduct.getId(),
+                ProductImage productImage = productService.createProductImage(existingProduct.getId(),
                         ProductImageDTO.builder()
-                                .productId(newProduct.getId())
+                                .productId(existingProduct.getId())
                                 .imageUrl(fileName)
                                 .build()
                 );
