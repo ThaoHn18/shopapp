@@ -18,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import java.awt.*;
 import java.io.File;
 import java.nio.file.Files;
@@ -69,9 +70,7 @@ public class ProductController {
 
     @PostMapping(value = "uploads/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadImages(@PathVariable("id") Long id,
-                                        @ModelAttribute("files") List<MultipartFile> files,
-                                        BindingResult result
-    ) {
+                                          @RequestParam("files")  List<MultipartFile> files) {
         try {
             Product existingProduct = productService.getProductById(id);
             files = files == null ? new ArrayList<MultipartFile>() : files;
@@ -103,14 +102,6 @@ public class ProductController {
             }
 
 
-            if (result.hasErrors()) {
-                List<String> errorMessages = result.getFieldErrors()
-                        .stream()
-                        .map(FieldError::getDefaultMessage)
-                        .toList();
-                return ResponseEntity.badRequest().body(errorMessages);
-
-            }
 
             return ResponseEntity.ok("tao thanh cong");
         } catch (Exception e) {
