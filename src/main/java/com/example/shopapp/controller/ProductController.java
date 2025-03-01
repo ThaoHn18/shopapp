@@ -4,10 +4,16 @@ import com.example.shopapp.dtos.ProductDTO;
 import com.example.shopapp.dtos.ProductImageDTO;
 import com.example.shopapp.models.Product;
 import com.example.shopapp.models.ProductImage;
+import com.example.shopapp.responses.ProductListResponse;
+import com.example.shopapp.responses.ProductResponse;
 import com.example.shopapp.services.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.internal.StringUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,11 +42,21 @@ import java.util.UUID;
 public class ProductController {
     private final ProductService productService;
     @GetMapping("")
-    public ResponseEntity<String> getAllProducts(
+    public ResponseEntity<ProductListResponse> getAllProducts(
             @RequestParam(value = "page") int page,
             @RequestParam(value = "limit") int limit
     ) {
-        return ResponseEntity.ok("getproducts");
+        PageRequest pageRequest = PageRequest.of(page, limit,
+                Sort.by("createdAt").descending());
+        Page<ProductResponse> productPage = productService.getAllProducts(pageRequest);
+        // lay tong so trang:
+        int totalPages = productPage.getTotalPages();
+        List<ProductResponse> products = productPage.getContent();
+        ProductListResponse productListResponse = ProductListResponse.builder()
+                .products(products)
+                .totalPages(totalPages)
+                .build();
+        return ResponseEntity.ok(productListResponse);
     }
 
     @GetMapping("/{id}")
