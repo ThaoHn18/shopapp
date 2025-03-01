@@ -2,11 +2,13 @@ package com.example.shopapp.controller;
 
 import com.example.shopapp.dtos.ProductDTO;
 import com.example.shopapp.dtos.ProductImageDTO;
+import com.example.shopapp.exceptions.DataNotFoundException;
 import com.example.shopapp.models.Product;
 import com.example.shopapp.models.ProductImage;
 import com.example.shopapp.responses.ProductListResponse;
 import com.example.shopapp.responses.ProductResponse;
 import com.example.shopapp.services.ProductService;
+import com.github.javafaker.Faker;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.internal.StringUtil;
@@ -60,8 +62,17 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getProduct(@PathVariable("id") String productId) {
-        return ResponseEntity.ok("procductId: "+ productId);
+    public ResponseEntity<?> getProduct(@PathVariable("id") Long productId) {
+        try{
+            Product existingProduct = productService.getProductById(productId);
+            if (existingProduct != null) {
+                return ResponseEntity.ok(ProductResponse.fromProduct(existingProduct));
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
     }
 
     @PostMapping("")
@@ -147,7 +158,38 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable("id") Long id) {
-        return ResponseEntity.ok("xoa thanh cong");
+        try{
+            Product existingProduct = productService.getProductById(id);
+            if (existingProduct != null) {
+                productService.deleteProduct(id);
+                return ResponseEntity.ok(existingProduct);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+    }
+
+
+    @PostMapping("generateFakeProducts")
+    public ResponseEntity<?> generateFakeProducts() throws DataNotFoundException {
+        Faker faker = new Faker();
+        for (int i = 0; i < 200000; i++) {
+            String productName =faker.commerce().productName();
+            if (productService.existsByName(productName)) {
+                continue;
+            }
+            ProductDTO productDTO = ProductDTO.builder()
+                    .name(productName)
+                    .price((float)faker.number().numberBetween(10,200000000))
+                    .description(faker.lorem().sentence())
+                    .thumbnail("")
+                    .categoryId((long)faker.number().numberBetween(1,5))
+                    .build();
+            productService.createProduct(productDTO);
+        }
+        return ResponseEntity.ok("Create fake products");
     }
 
 }
