@@ -11,6 +11,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByPhoneNumber(String phoneNumber);
     Optional<User> findByPhoneNumber(String phoneNumber);
     @Query(value = "SELECT * FROM users WHERE id = :id", nativeQuery = true)
-    Optional<User> findUserById(@Param("id") Long id);
+    User findUserById(@Param("id") Long id);
 
 }

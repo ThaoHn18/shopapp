@@ -17,6 +17,7 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
 public class OrderDTO {
+    Long id;
     @JsonProperty("user_id")
     @Min(value = 1, message = "user id > 1")
     Long userId;

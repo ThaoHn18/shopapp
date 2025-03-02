@@ -1,6 +1,8 @@
 package com.example.shopapp.controller;
 
 import com.example.shopapp.dtos.OrderDTO;
+import com.example.shopapp.models.Order;
+import com.example.shopapp.repositories.OrderRepository;
 import com.example.shopapp.responses.OrderResponse;
 import com.example.shopapp.services.IOrderService;
 import com.example.shopapp.services.OrderService;
@@ -19,7 +21,9 @@ import java.util.List;
 @RequestMapping("${api.prefix}/orders")
 @RequiredArgsConstructor
 public class OrderController {
-    private final IOrderService orderService;
+    private final OrderService orderService;
+    private final OrderRepository orderRepository;
+
     @PostMapping()
     public ResponseEntity<?> createOrder(@Valid @RequestBody OrderDTO orderDTO,
                                          BindingResult result
@@ -40,26 +44,46 @@ public class OrderController {
         }
     }
 
-    @GetMapping("/{user_id}")
-    public ResponseEntity<?> getOrderById(@Valid @PathVariable("user_id") Long userId) {
+    @GetMapping("/user/{user_id}")
+    public ResponseEntity<?> getOrderByUserId(@Valid @PathVariable("user_id") Long userId) {
         try {
-            return ResponseEntity.ok("lay danh sach order cua user_id thanh cong");
+            List<Order> orders = orderService.findByUserId(userId);
+            return ResponseEntity.ok(orders);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("lay danh sach order cua user_id thanh cong");
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateOrder(@Valid @RequestBody @PathVariable("id") Long orderId , OrderDTO orderDTO) {
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getOrderById(@Valid @PathVariable("id") Long id) {
         try {
-            return ResponseEntity.ok().body("UPdate order thanh cong");
+            Order existingOrder = orderService.getOrder(id);
+            if (existingOrder == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(existingOrder);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("lay danh sach order cua user_id thanh cong");
+        }
+    }
+
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateOrder(@Valid @PathVariable("id") Long id,
+                                         @Valid @RequestBody OrderDTO orderDTO
+                                         ) {
+        try {
+            Order existingOrder =  orderService.updateOrder(id, orderDTO);
+
+            return ResponseEntity.ok().body(existingOrder);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Update order khong thanh cong");
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteOrder(@PathVariable("id") Long orderId) {
+    public ResponseEntity<?> deleteOrder(@PathVariable("id") Long id) {
         try {
             return ResponseEntity.ok().body("Delete order thanh cong");
         } catch (Exception e) {

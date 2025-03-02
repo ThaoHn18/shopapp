@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
+
 @Service
 @RequiredArgsConstructor
 public class OrderService implements IOrderService{
@@ -28,7 +29,7 @@ public class OrderService implements IOrderService{
     public OrderResponse createOrder(OrderDTO orderDTO) throws Exception {
         // tim xe user_id co ton tai hay khong:
         Long userId = Long.valueOf(orderDTO.getUserId());
-        User user =  userRepository.findUserById(userId).orElseThrow(()-> new DataNotFoundException("User Not Found"));
+        User user =  userRepository.findUserById(userId);
         // chuyen doi orderdto sang order de luu db:
         // dung thu vien model maper
         modelMapper.typeMap(OrderDTO.class, Order.class)
@@ -54,22 +55,35 @@ public class OrderService implements IOrderService{
     }
 
     @Override
-    public OrderResponse updateOrder(OrderDTO orderDTO) {
+    public Order updateOrder(Long id, OrderDTO orderDTO) throws DataNotFoundException {
+        Order existingOrder = orderRepository.findOrderById(id);
+        User user =  userRepository.findUserById(orderDTO.getUserId());
+        if(existingOrder == null ||user == null) {
+            throw new DataNotFoundException("Order or User khong ton tai");
+        }
+        modelMapper.typeMap(OrderDTO.class, Order.class)
+                .addMappings(mapper-> mapper.skip(Order::setId));
+        Order order = new Order();
+        modelMapper.map(orderDTO,order);
+        order.setUser(user);
+        order.setActive(true);
+        return orderRepository.save(order);
+    }
+
+    @Override
+    public OrderResponse deleteOrder(Long orderId) {
         return null;
     }
 
     @Override
-    public OrderResponse deleteOrder(String orderId) {
-        return null;
+    public Order getOrder(Long id) {
+        return orderRepository.findOrderById(id);
+
     }
 
     @Override
-    public OrderResponse getOrder(String orderId) {
-        return null;
+    public List<Order> findByUserId(Long userId) {
+        return orderRepository.findOrdersByUserIdWithUser(userId);
     }
 
-    @Override
-    public List<OrderResponse> getAllOrders(Long userId) {
-        return List.of();
-    }
 }
