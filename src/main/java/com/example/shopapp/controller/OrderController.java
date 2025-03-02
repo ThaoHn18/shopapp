@@ -1,7 +1,11 @@
 package com.example.shopapp.controller;
 
 import com.example.shopapp.dtos.OrderDTO;
+import com.example.shopapp.responses.OrderResponse;
+import com.example.shopapp.services.IOrderService;
+import com.example.shopapp.services.OrderService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -9,9 +13,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+
 @RestController
 @RequestMapping("${api.prefix}/orders")
+@RequiredArgsConstructor
 public class OrderController {
+    private final IOrderService orderService;
     @PostMapping()
     public ResponseEntity<?> createOrder(@Valid @RequestBody OrderDTO orderDTO,
                                          BindingResult result
@@ -25,8 +33,8 @@ public class OrderController {
                 return ResponseEntity.badRequest().body(errorMessages);
 
             }
-
-            return ResponseEntity.ok().body(orderDTO);
+            OrderResponse orderResponse =  orderService.createOrder(orderDTO);
+            return ResponseEntity.ok().body(orderResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("loi roi");
         }

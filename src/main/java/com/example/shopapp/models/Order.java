@@ -40,13 +40,13 @@ public class Order{
     String note;
 
     @Column(name = "order_date", length = 100)
-    String orderDate;
+    Date orderDate;
 
     @Column(name = "status", nullable = false)
     String status;
 
     @Column(name = "total_money")
-    Integer totalMoney;
+    Float totalMoney;
 
     @Column(name = "shipping_method")
     String shippingMethod;
