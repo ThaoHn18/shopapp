@@ -11,6 +11,7 @@ import com.project.shopapp.models.OrderStatus;
 import lombok.RequiredArgsConstructor;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -71,9 +72,14 @@ public class OrderService implements IOrderService{
     }
 
     @Override
-    public OrderResponse deleteOrder(Long orderId) {
-        return null;
+    public void deleteOrder(Long id) {
+        Order order = orderRepository.findById(id).orElse(null);
+        if (order != null) { // Fix: Only modify order if it exists
+            order.setActive(false);
+            orderRepository.save(order);
+        }
     }
+
 
     @Override
     public Order getOrder(Long id) {

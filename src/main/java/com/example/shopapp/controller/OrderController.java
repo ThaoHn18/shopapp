@@ -14,7 +14,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+import java.util.Optional;
 
 
 @RestController
@@ -85,6 +85,7 @@ public class OrderController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOrder(@PathVariable("id") Long id) {
         try {
+            orderService.deleteOrder(id);
             return ResponseEntity.ok().body("Delete order thanh cong");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Update order khong thanh cong");
