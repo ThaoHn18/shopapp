@@ -12,17 +12,18 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
 public class OrderDetailDTO {
+    Long id;
     @JsonProperty("order_id")
     @Min(value = 1, message = "Id must be > 0")
     Long orderId;
     @JsonProperty("product_id")
     @Min(value = 1, message = "Id must be > 0")
     Long productId;
-    Long price;
+    float price;
     @JsonProperty("number_of_product")
     @Min(value = 1, message = "numberOfProducts must be > 0")
     int numberOfProducts;
     @JsonProperty("total_money")
-    int totalMoney;
+    float totalMoney;
     String color;
 }
