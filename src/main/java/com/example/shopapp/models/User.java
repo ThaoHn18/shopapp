@@ -73,7 +73,7 @@ public class User extends BaseModel implements UserDetails {
     @Column(name = "date_of_birth")
     Date dateOfBirth;
     @Column(name = "facebook_account_id")
-    int facobookAccountId;
+    int facebookAccountId;
 
     @Column(name = "google_account_id")
     int googleAccountId;
