@@ -25,4 +25,5 @@ api:
 
 jwt:
   expiration: 2592000
-  SecretKey: thaohnsdsds
+  SecretKey: p7vNQ+MZr1rDqKzKZt9JjvT4sByklbl0WXNFGM6Xz9Y=
+

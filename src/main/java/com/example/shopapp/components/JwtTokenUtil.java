@@ -1,5 +1,6 @@
 package com.example.shopapp.components;
 
+import com.example.shopapp.exceptions.InvalidParamException;
 import com.example.shopapp.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -25,7 +26,7 @@ public class JwtTokenUtil {
     @Value("${jwt.SecretKey}")
     private String SecretKey;
 
-    public String generateToken(User user) {
+    public String generateToken(User user) throws Exception {
         Map<String, Object> claims = new HashMap<>();
         claims.put("phoneNumber", user.getPhoneNumber());
         try {
@@ -38,8 +39,8 @@ public class JwtTokenUtil {
             return token;
 
         } catch (Exception e){
-            System.out.println(e.getMessage());
-            return null;
+            throw new InvalidParamException("Cannot create token: "+ e.getMessage());
+
 
         }
     }
