@@ -3,6 +3,7 @@ package com.example.shopapp.services;
 import com.example.shopapp.components.JwtTokenUtil;
 import com.example.shopapp.dtos.userDTO;
 import com.example.shopapp.exceptions.DataNotFoundException;
+import com.example.shopapp.exceptions.PermissionDenyException;
 import com.example.shopapp.models.Role;
 import com.example.shopapp.models.User;
 import com.example.shopapp.repositories.RoleRepository;
@@ -28,10 +29,15 @@ public class UserService implements IUserService {
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
     @Override
-    public User createUser(userDTO userDTO) {
+    public User createUser(userDTO userDTO) throws Exception {
         String phoneNumber = userDTO.getPhoneNumber();
         if(userRepository.existsByPhoneNumber(phoneNumber)) {
             throw new DataIntegrityViolationException("Phone number alreadly exists");
+        }
+        Role role = roleRepository.findById(Long.valueOf(userDTO.getRoleId()))
+                .orElseThrow(() -> new DataNotFoundException("role not found"));
+        if(role.getName().toUpperCase().equals(Role.ADMIN)) {
+            throw new PermissionDenyException("you cannot register admin");
         }
         User newUser = User.builder()
                 .fullName(userDTO.getFullName())
@@ -43,8 +49,6 @@ public class UserService implements IUserService {
                 .googleAccountId(userDTO.getGoogleAccountId())
                 .build();
         try{
-            Role role = roleRepository.findById(Long.valueOf(userDTO.getRoleId()))
-                    .orElseThrow(() -> new DataNotFoundException("role not found"));
             newUser.setRole(role);
         } catch (DataNotFoundException e) {
             throw new RuntimeException(e);

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.checkerframework.checker.units.qual.K;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -55,23 +56,34 @@ public class JwtTokenUtil {
         return Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody();
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
-        final Claims claims = this.extractToken(token);
-        return claimsResolver.apply(claims);
-
-    };
+        try {
+            final Claims claims = this.extractToken(token);
+            return claimsResolver.apply(claims);
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            // Token hết hạn nhưng vẫn lấy được claims
+            System.out.println("Token expired at: " + e.getClaims().getExpiration());
+            return claimsResolver.apply(e.getClaims());
+        }
+    }
 
     public boolean isTokenExpired(String token){
         Date expirationDate = this.extractClaim(token, Claims::getExpiration);
         return expirationDate.before(new Date());
     }
 
-    public  String extractPhonenumber(String token){
+    public String extractPhonenumber(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public boolean validateToken(String token, UserDetails userDetails){
+        String phoneNumber = this.extractPhonenumber(token);
+        return phoneNumber.equals(userDetails.getUsername()) && !isTokenExpired(token);
+
     }
 
 }
